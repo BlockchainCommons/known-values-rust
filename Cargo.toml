@@ -1,0 +1,23 @@
+[package]
+name = "known-values"
+version = "0.1.0"
+edition = "2024"
+description = "Blockchain Commons Known Values."
+authors = ["Blockchain Commons"]
+repository = "https://github.com/BlockchainCommons/known-values-rust"
+readme = "README.md"
+license = "BSD-2-Clause-Patent"
+documentation = "https://docs.rs/known-values"
+keywords = [
+    "encoding",
+    "cbor",
+    "binary",
+    "format",
+    "serialization",
+] # Up to five
+categories = ["data-structures", "encoding"] # https://crates.io/category_slugs
+
+[dependencies]
+bc-components = "^0.20.0"
+dcbor = { version = "^0.18.0", features = ["multithreaded"] }
+paste = "^1.0.12"
