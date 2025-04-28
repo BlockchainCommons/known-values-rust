@@ -18,7 +18,7 @@ use super::KnownValuesStore;
 /// use paste::paste;
 ///
 /// // Define a custom known value
-/// const_known_value!(MY_CUSTOM_VALUE, 1000, "myCustomValue");
+/// const_known_value!(1000, MY_CUSTOM_VALUE, "myCustomValue");
 ///
 /// // Now MY_CUSTOM_VALUE is a constant KnownValue
 /// assert_eq!(MY_CUSTOM_VALUE.value(), 1000);
