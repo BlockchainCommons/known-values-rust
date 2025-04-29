@@ -68,7 +68,8 @@ const_known_value!(19, HAS_SECRET, "hasSecret");
 const_known_value!(20, DIFF_EDITS, "edits");
 const_known_value!(21, VALID_FROM, "validFrom");
 const_known_value!(22, VALID_UNTIL, "validUntil");
-// 23-49 *unassigned*
+const_known_value!(23, POSITION, "position");
+// 24-49 *unassigned*
 
 //
 // Attachments
@@ -252,6 +253,7 @@ impl LazyKnownValues {
                 DIFF_EDITS,
                 VALID_FROM,
                 VALID_UNTIL,
+                POSITION,
 
                 ATTACHMENT,
                 VENDOR,
