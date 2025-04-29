@@ -45,7 +45,7 @@ macro_rules! const_known_value {
 // General
 //
 
-// 0 *unassigned*
+const_known_value!(0, UNIT, "");
 const_known_value!(1, IS_A, "isA");
 const_known_value!(2, ID, "id");
 const_known_value!(3, SIGNED, "signed");
@@ -229,6 +229,7 @@ impl LazyKnownValues {
     pub fn get(&self) -> std::sync::MutexGuard<'_, Option<KnownValuesStore>> {
         self.init.call_once(|| {
             let m = KnownValuesStore::new([
+                UNIT,
                 IS_A,
                 ID,
                 SIGNED,
