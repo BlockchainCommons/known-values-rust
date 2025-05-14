@@ -69,7 +69,8 @@ const_known_value!(20, DIFF_EDITS, "edits");
 const_known_value!(21, VALID_FROM, "validFrom");
 const_known_value!(22, VALID_UNTIL, "validUntil");
 const_known_value!(23, POSITION, "position");
-// 24-49 *unassigned*
+const_known_value!(24, NICKNAME, "nickname");
+// 25-49 *unassigned*
 
 //
 // Attachments
@@ -254,6 +255,7 @@ impl LazyKnownValues {
                 VALID_FROM,
                 VALID_UNTIL,
                 POSITION,
+                NICKNAME,
 
                 ATTACHMENT,
                 VENDOR,
