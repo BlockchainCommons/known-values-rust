@@ -14,7 +14,7 @@ This crate defines the [known values](https://github.com/BlockchainCommons/Resea
 
 ```toml
 [dependencies]
-known-values = "0.4.0"
+known-values = "0.5.0"
 ```
 
 ## Status - Community Review
