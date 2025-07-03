@@ -1,6 +1,14 @@
 # Blockchain Commons Known Values
 
-<!--Guidelines: https://github.com/BlockchainCommons/secure-template/wiki -->
+<!--Guidelines: https://gi| Wolf McNally      | Lead Researcher/Engineer | [@WolfMcNally](https://github.com/wolfmcnally)   | \<Wolf@WolfMcNally.com\>              | 9436 52EE 3844 1760 C3DC  3536 4B6C 2FCF 8947 80AE |
+
+## Version History
+
+### 0.7.0 - July 3, 2025
+
+- Align to dependencies.
+
+## Responsible Disclosureb.com/BlockchainCommons/secure-template/wiki -->
 
 ### _by Wolf McNally_
 
@@ -14,7 +22,7 @@ This crate defines the [known values](https://github.com/BlockchainCommons/Resea
 
 ```toml
 [dependencies]
-known-values = "0.6.0"
+known-values = "0.7.0"
 ```
 
 ## Status - Community Review
