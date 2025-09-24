@@ -1,6 +1,9 @@
-use std::{ fmt::{ Formatter, Display }, borrow::Cow };
+use std::{
+    borrow::Cow,
+    fmt::{Display, Formatter},
+};
 
-use bc_components::{ tags, DigestProvider, Digest };
+use bc_components::{Digest, DigestProvider, tags};
 use dcbor::prelude::*;
 
 #[derive(Debug, Clone)]
@@ -16,8 +19,8 @@ enum KnownValueName {
 /// ontological concepts such as relationships between entities, classes of
 /// entities, properties, or enumerated values. They are particularly useful as
 /// predicates in Gordian Envelope assertions, offering a more compact and
-/// deterministic alternative to URIs. However, known values are not exclusive to
-/// Gordian Envelopes and can be used in any context where a compact, unique
+/// deterministic alternative to URIs. However, known values are not exclusive
+/// to Gordian Envelopes and can be used in any context where a compact, unique
 /// identifier for a concept is needed.
 ///
 /// A Known Value is represented as a 64-bit unsigned integer with an optional
@@ -63,7 +66,8 @@ enum KnownValueName {
 pub struct KnownValue {
     /// The known value as coded into CBOR.
     value: u64,
-    /// A name assigned to the known value used for debugging and formatted output.
+    /// A name assigned to the known value used for debugging and formatted
+    /// output.
     assigned_name: Option<KnownValueName>,
 }
 
@@ -78,9 +82,7 @@ impl KnownValue {
     /// let known_value = KnownValue::new(42);
     /// assert_eq!(known_value.value(), 42);
     /// ```
-    pub fn new(value: u64) -> Self {
-        Self { value, assigned_name: None }
-    }
+    pub fn new(value: u64) -> Self { Self { value, assigned_name: None } }
 
     /// Creates a KnownValue with the given value and associated name.
     ///
@@ -96,11 +98,18 @@ impl KnownValue {
     /// assert_eq!(known_value.value(), 1);
     /// assert_eq!(known_value.name(), "isA");
     /// ```
-    pub fn new_with_name<T: Into<u64>>(value: T, assigned_name: String) -> Self {
-        Self { value: value.into(), assigned_name: Some(KnownValueName::Dynamic(assigned_name)) }
+    pub fn new_with_name<T: Into<u64>>(
+        value: T,
+        assigned_name: String,
+    ) -> Self {
+        Self {
+            value: value.into(),
+            assigned_name: Some(KnownValueName::Dynamic(assigned_name)),
+        }
     }
 
-    /// Creates a KnownValue at compile time with the given value and static name.
+    /// Creates a KnownValue at compile time with the given value and static
+    /// name.
     ///
     /// This function is used primarily with the `const_known_value!` macro to
     /// define known values as constants in the registry.
@@ -117,7 +126,10 @@ impl KnownValue {
     /// assert_eq!(IS_A.name(), "isA");
     /// ```
     pub const fn new_with_static_name(value: u64, name: &'static str) -> Self {
-        Self { value, assigned_name: Some(KnownValueName::Static(name)) }
+        Self {
+            value,
+            assigned_name: Some(KnownValueName::Static(name)),
+        }
     }
 
     /// Returns the numeric value of the KnownValue.
@@ -130,9 +142,7 @@ impl KnownValue {
     /// assert_eq!(known_values::IS_A.value(), 1);
     /// assert_eq!(known_values::NOTE.value(), 4);
     /// ```
-    pub fn value(&self) -> u64 {
-        self.value
-    }
+    pub fn value(&self) -> u64 { self.value }
 
     /// Returns the assigned name of the KnownValue, if one exists.
     ///
@@ -180,14 +190,14 @@ impl KnownValue {
     }
 }
 
-/// Equality for KnownValue is based solely on the numeric value, ignoring the name.
+/// Equality for KnownValue is based solely on the numeric value, ignoring the
+/// name.
 impl PartialEq for KnownValue {
-    fn eq(&self, other: &Self) -> bool {
-        self.value == other.value
-    }
+    fn eq(&self, other: &Self) -> bool { self.value == other.value }
 }
 
-/// KnownValue implements Eq since equality is based on the numeric value, which can be compared for equality.
+/// KnownValue implements Eq since equality is based on the numeric value, which
+/// can be compared for equality.
 impl Eq for KnownValue {}
 
 /// Hash implementation for KnownValue that considers only the numeric value.
@@ -199,7 +209,8 @@ impl std::hash::Hash for KnownValue {
 
 /// Formats the KnownValue for display.
 ///
-/// If a name is assigned, the name is displayed. Otherwise, the numeric value is displayed.
+/// If a name is assigned, the name is displayed. Otherwise, the numeric value
+/// is displayed.
 impl Display for KnownValue {
     fn fmt(&self, f: &mut Formatter<'_>) -> std::fmt::Result {
         match &self.assigned_name {
@@ -219,16 +230,12 @@ impl DigestProvider for KnownValue {
 
 /// Specifies the CBOR tag used for KnownValue.
 impl CBORTagged for KnownValue {
-    fn cbor_tags() -> Vec<Tag> {
-        tags_for_values(&[tags::TAG_KNOWN_VALUE])
-    }
+    fn cbor_tags() -> Vec<Tag> { tags_for_values(&[tags::TAG_KNOWN_VALUE]) }
 }
 
 /// Converts a KnownValue to CBOR.
 impl From<KnownValue> for CBOR {
-    fn from(value: KnownValue) -> Self {
-        value.tagged_cbor()
-    }
+    fn from(value: KnownValue) -> Self { value.tagged_cbor() }
 }
 
 /// Attempts to convert CBOR to a KnownValue.
@@ -242,9 +249,7 @@ impl TryFrom<CBOR> for KnownValue {
 
 /// Provides the untagged CBOR representation of a KnownValue.
 impl CBORTaggedEncodable for KnownValue {
-    fn untagged_cbor(&self) -> CBOR {
-        self.value.into()
-    }
+    fn untagged_cbor(&self) -> CBOR { self.value.into() }
 }
 
 /// Creates a KnownValue from untagged CBOR.
@@ -257,21 +262,15 @@ impl CBORTaggedDecodable for KnownValue {
 
 /// Creates a KnownValue from a u64.
 impl From<u64> for KnownValue {
-    fn from(value: u64) -> Self {
-        KnownValue::new(value)
-    }
+    fn from(value: u64) -> Self { KnownValue::new(value) }
 }
 
 /// Creates a KnownValue from an i32.
 impl From<i32> for KnownValue {
-    fn from(value: i32) -> Self {
-        KnownValue::new(value as u64)
-    }
+    fn from(value: i32) -> Self { KnownValue::new(value as u64) }
 }
 
 /// Creates a KnownValue from a usize.
 impl From<usize> for KnownValue {
-    fn from(value: usize) -> Self {
-        KnownValue::new(value as u64)
-    }
+    fn from(value: usize) -> Self { KnownValue::new(value as u64) }
 }

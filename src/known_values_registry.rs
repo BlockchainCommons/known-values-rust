@@ -1,4 +1,5 @@
-use std::sync::{ Once, Mutex };
+use std::sync::{Mutex, Once};
+
 use paste::paste;
 
 use super::KnownValuesStore;
@@ -9,7 +10,8 @@ use super::KnownValuesStore;
 /// - A raw u64 value constant with the suffix `_RAW`
 /// - A KnownValue constant with the given name and value
 ///
-/// This is used internally to define all the standard Known Values in the registry.
+/// This is used internally to define all the standard Known Values in the
+/// registry.
 ///
 /// # Examples
 ///
@@ -35,7 +37,8 @@ macro_rules! const_known_value {
         paste! {
             pub const [<$const_name _RAW>]: u64 = $value;
         }
-        pub const $const_name: $crate::KnownValue = $crate::KnownValue::new_with_static_name($value, $name);
+        pub const $const_name: $crate::KnownValue =
+            $crate::KnownValue::new_with_static_name($value, $name);
     };
 }
 
@@ -202,15 +205,17 @@ const_known_value!(704, PARENT, "parent");
 const_known_value!(705, CHILD, "child");
 // 706-... *unassigned*
 
-/// A lazily initialized singleton that holds the global registry of known values.
+/// A lazily initialized singleton that holds the global registry of known
+/// values.
 ///
-/// This type provides thread-safe, lazy initialization of the global KnownValuesStore
-/// that contains all the predefined Known Values in the registry. The store is created
-/// only when first accessed, and subsequent accesses reuse the same instance.
+/// This type provides thread-safe, lazy initialization of the global
+/// KnownValuesStore that contains all the predefined Known Values in the
+/// registry. The store is created only when first accessed, and subsequent
+/// accesses reuse the same instance.
 ///
-/// This is used internally by the crate and should not typically be needed by users
-/// of the API, who should access Known Values through the constants exposed in the
-/// `known_values` module.
+/// This is used internally by the crate and should not typically be needed by
+/// users of the API, who should access Known Values through the constants
+/// exposed in the `known_values` module.
 ///
 /// # Thread Safety
 ///
@@ -256,11 +261,9 @@ impl LazyKnownValues {
                 VALID_UNTIL,
                 POSITION,
                 NICKNAME,
-
                 ATTACHMENT,
                 VENDOR,
                 CONFORMS_TO,
-
                 ALLOW,
                 DENY,
                 ENDPOINT,
@@ -269,7 +272,6 @@ impl LazyKnownValues {
                 PRIVATE_KEY,
                 SERVICE,
                 CAPABILITY,
-
                 PRIVILEGE_ALL,
                 PRIVILEGE_AUTH,
                 PRIVILEGE_SIGN,
@@ -277,7 +279,6 @@ impl LazyKnownValues {
                 PRIVILEGE_ELIDE,
                 PRIVILEGE_ISSUE,
                 PRIVILEGE_ACCESS,
-
                 PRIVILEGE_DELEGATE,
                 PRIVILEGE_VERIFY,
                 PRIVILEGE_UPDATE,
@@ -285,7 +286,6 @@ impl LazyKnownValues {
                 PRIVILEGE_ELECT,
                 PRIVILEGE_BURN,
                 PRIVILEGE_REVOKE,
-
                 BODY,
                 RESULT,
                 ERROR,
@@ -295,21 +295,17 @@ impl LazyKnownValues {
                 SENDER_CONTINUATION,
                 RECIPIENT_CONTINUATION,
                 CONTENT,
-
                 SEED_TYPE,
                 PRIVATE_KEY_TYPE,
                 PUBLIC_KEY_TYPE,
                 MASTER_KEY_TYPE,
-
                 ASSET,
                 BITCOIN_VALUE,
                 ETHEREUM_VALUE,
                 TEZOS_VALUE,
-
                 NETWORK,
                 MAIN_NET_VALUE,
                 TEST_NET_VALUE,
-
                 BIP32_KEY_TYPE,
                 CHAIN_CODE,
                 DERIVATION_PATH_TYPE,
@@ -319,7 +315,6 @@ impl LazyKnownValues {
                 PSBT_TYPE,
                 OUTPUT_DESCRIPTOR_TYPE,
                 OUTPUT_DESCRIPTOR,
-
                 GRAPH,
                 SOURCE_TARGET_GRAPH,
                 PARENT_CHILD_GRAPH,
@@ -349,8 +344,8 @@ impl LazyKnownValues {
 
 /// The global registry of Known Values.
 ///
-/// This static instance provides access to all standard Known Values defined in the
-/// registry specification. It is lazily initialized on first access.
+/// This static instance provides access to all standard Known Values defined in
+/// the registry specification. It is lazily initialized on first access.
 ///
 /// Most users should not need to interact with this directly, as the predefined
 /// Known Values are exposed as constants in the `known_values` module.
@@ -368,10 +363,8 @@ impl LazyKnownValues {
 /// let is_a = known_values.known_value_named("isA").unwrap();
 /// assert_eq!(is_a.value(), 1);
 /// ```
-pub static KNOWN_VALUES: LazyKnownValues = LazyKnownValues {
-    init: Once::new(),
-    data: Mutex::new(None),
-};
+pub static KNOWN_VALUES: LazyKnownValues =
+    LazyKnownValues { init: Once::new(), data: Mutex::new(None) };
 
 #[cfg(test)]
 mod tests {
