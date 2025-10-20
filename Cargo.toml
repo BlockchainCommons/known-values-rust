@@ -18,6 +18,6 @@ keywords = [
 categories = ["data-structures", "encoding"] # https://crates.io/category_slugs
 
 [dependencies]
-bc-components = "^0.25.0"
-dcbor = { version = "^0.23.0", features = ["multithreaded"] }
+bc-components = "^0.26.0"
+dcbor = { version = "^0.23.1", features = ["multithreaded"] }
 paste = "^1.0.12"
