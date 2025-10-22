@@ -152,7 +152,9 @@ const_known_value!(300, ASSET, "asset");
 const_known_value!(301, BITCOIN_VALUE, "BTC");
 const_known_value!(302, ETHEREUM_VALUE, "ETH");
 const_known_value!(303, TEZOS_VALUE, "XTZ");
-// 304-399 *unassigned*
+const_known_value!(304, POLKADOT_VALUE, "DOT");
+const_known_value!(305, KUSAMA_VALUE, "KSM");
+// 306-399 *unassigned*
 
 //
 // Cryptocurrency Networks
