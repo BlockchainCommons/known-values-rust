@@ -96,6 +96,7 @@ const_known_value!(64, PROVENANCE, "provenance");
 const_known_value!(65, PRIVATE_KEY, "privateKey");
 const_known_value!(66, SERVICE, "service");
 const_known_value!(67, CAPABILITY, "capability");
+const_known_value!(68, PROVENANCE_GENERATOR, "provenanceGenerator");
 // 68-69 *unassigned*
 
 //
@@ -272,6 +273,7 @@ impl LazyKnownValues {
                 PRIVATE_KEY,
                 SERVICE,
                 CAPABILITY,
+                PROVENANCE_GENERATOR,
                 PRIVILEGE_ALL,
                 PRIVILEGE_AUTH,
                 PRIVILEGE_SIGN,
