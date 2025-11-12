@@ -14,10 +14,14 @@ This crate defines the [known values](https://github.com/BlockchainCommons/Resea
 
 ```toml
 [dependencies]
-known-values = "0.10.0"
+known-values = "0.11.0"
 ```
 
 ## Version History
+
+### 0.11.0 - November 12, 2025
+
+- Align to dependencies.
 
 ### 0.10.0 - November 3, 2025
 
