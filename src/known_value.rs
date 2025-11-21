@@ -1,7 +1,4 @@
-use std::{
-    borrow::Cow,
-    fmt::{Display, Formatter},
-};
+use std::fmt::{Display, Formatter};
 
 use bc_components::{Digest, DigestProvider, tags};
 use dcbor::prelude::*;
@@ -223,8 +220,8 @@ impl Display for KnownValue {
 
 /// Provides a cryptographic digest for a KnownValue.
 impl DigestProvider for KnownValue {
-    fn digest(&self) -> Cow<'_, Digest> {
-        Cow::Owned(Digest::from_image(self.tagged_cbor().to_cbor_data()))
+    fn digest(&self) -> Digest {
+        Digest::from_image(self.tagged_cbor().to_cbor_data())
     }
 }
 
