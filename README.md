@@ -14,10 +14,15 @@ This crate defines the [known values](https://github.com/BlockchainCommons/Resea
 
 ```toml
 [dependencies]
-known-values = "0.11.0"
+known-values = "0.12.0"
 ```
 
 ## Version History
+
+### 0.12.0 - December 3, 2025
+
+- Align to dependencies.
+- Update DigestProvider implementation to return Digest directly.
 
 ### 0.11.0 - November 12, 2025
 
