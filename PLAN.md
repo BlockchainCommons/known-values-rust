@@ -20,7 +20,7 @@ The research repo uses this structure (files like `0_blockchain_commons_registry
   "entries": [
     {
       "codepoint": 1,
-      "canonical_name": "isA",
+      "name": "isA",
       "type": "property",
       "uri": "...",
       "description": "..."
@@ -77,7 +77,7 @@ mod directory_loader {
     #[derive(Debug, Deserialize)]
     pub struct RegistryEntry {
         pub codepoint: u64,
-        pub canonical_name: String,
+        pub name: String,
         #[serde(rename = "type")]
         pub entry_type: Option<String>,
         pub uri: Option<String>,
@@ -201,7 +201,7 @@ pub fn load_from_directory(path: &Path) -> Result<Vec<KnownValue>, LoadError> {
             for entry in registry.entries {
                 values.push(KnownValue::new_with_name(
                     entry.codepoint,
-                    entry.canonical_name,
+                    entry.name,
                 ));
             }
         }
@@ -413,7 +413,7 @@ mod tests {
         let json = r#"{
             "ontology": {"name": "test"},
             "entries": [
-                {"codepoint": 9999, "canonical_name": "testValue", "type": "property"}
+                {"codepoint": 9999, "name": "testValue", "type": "property"}
             ],
             "statistics": {}
         }"#;
@@ -421,7 +421,7 @@ mod tests {
         let registry: RegistryFile = serde_json::from_str(json).unwrap();
         assert_eq!(registry.entries.len(), 1);
         assert_eq!(registry.entries[0].codepoint, 9999);
-        assert_eq!(registry.entries[0].canonical_name, "testValue");
+        assert_eq!(registry.entries[0].name, "testValue");
     }
 
     #[test]
@@ -429,7 +429,7 @@ mod tests {
         let temp_dir = TempDir::new().unwrap();
         let file_path = temp_dir.path().join("test_registry.json");
 
-        let json = r#"{"entries": [{"codepoint": 8888, "canonical_name": "dirTest"}]}"#;
+        let json = r#"{"entries": [{"codepoint": 8888, "name": "dirTest"}]}"#;
         std::fs::write(&file_path, json).unwrap();
 
         let values = load_from_directory(temp_dir.path()).unwrap();
@@ -444,7 +444,7 @@ mod tests {
         let file_path = temp_dir.path().join("override.json");
 
         // Override IS_A (codepoint 1) with custom name
-        let json = r#"{"entries": [{"codepoint": 1, "canonical_name": "customIsA"}]}"#;
+        let json = r#"{"entries": [{"codepoint": 1, "name": "customIsA"}]}"#;
         std::fs::write(&file_path, json).unwrap();
 
         let mut store = KnownValuesStore::new([crate::IS_A]);
@@ -509,7 +509,7 @@ mod tests {
 //! ```json
 //! {
 //!   "entries": [
-//!     {"codepoint": 1000, "canonical_name": "myValue", "type": "property"}
+//!     {"codepoint": 1000, "name": "myValue", "type": "property"}
 //!   ]
 //! }
 //! ```

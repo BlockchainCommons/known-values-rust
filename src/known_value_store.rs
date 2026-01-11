@@ -319,25 +319,29 @@ impl KnownValuesStore {
     ) {
         // If there's an existing value with the same codepoint, remove its name
         // from the name index to avoid stale entries
-        if let Some(old_value) = known_values_by_raw_value.get(&known_value.value()) {
-            if let Some(old_name) = old_value.assigned_name() {
-                known_values_by_assigned_name.remove(old_name);
-            }
+        if let Some(old_value) =
+            known_values_by_raw_value.get(&known_value.value())
+            && let Some(old_name) = old_value.assigned_name()
+        {
+            known_values_by_assigned_name.remove(old_name);
         }
 
-        known_values_by_raw_value.insert(known_value.value(), known_value.clone());
+        known_values_by_raw_value
+            .insert(known_value.value(), known_value.clone());
         if let Some(name) = known_value.assigned_name() {
             known_values_by_assigned_name.insert(name.to_string(), known_value);
         }
     }
 
-    /// Loads and inserts known values from a directory containing JSON registry files.
+    /// Loads and inserts known values from a directory containing JSON registry
+    /// files.
     ///
-    /// This method scans the specified directory for `.json` files and parses them
-    /// as known value registries. Values from JSON files override existing values
-    /// in the store when codepoints match.
+    /// This method scans the specified directory for `.json` files and parses
+    /// them as known value registries. Values from JSON files override
+    /// existing values in the store when codepoints match.
     ///
-    /// This method is only available when the `directory-loading` feature is enabled.
+    /// This method is only available when the `directory-loading` feature is
+    /// enabled.
     ///
     /// # Arguments
     ///
@@ -371,13 +375,15 @@ impl KnownValuesStore {
         Ok(count)
     }
 
-    /// Loads known values from multiple directories using the provided configuration.
+    /// Loads known values from multiple directories using the provided
+    /// configuration.
     ///
     /// Directories are processed in order. When multiple entries have the same
     /// codepoint, values from later directories override values from earlier
     /// directories.
     ///
-    /// This method is only available when the `directory-loading` feature is enabled.
+    /// This method is only available when the `directory-loading` feature is
+    /// enabled.
     ///
     /// # Arguments
     ///

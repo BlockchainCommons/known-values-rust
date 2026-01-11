@@ -26,7 +26,7 @@
 //!   "entries": [
 //!     {
 //!       "codepoint": 1000,
-//!       "canonical_name": "myValue",
+//!       "name": "myValue",
 //!       "type": "property",
 //!       "uri": "https://example.com/vocab#myValue",
 //!       "description": "A custom known value"
@@ -35,16 +35,18 @@
 //! }
 //! ```
 //!
-//! Only the `entries` array with `codepoint` and `canonical_name` fields
+//! Only the `entries` array with `codepoint` and `name` fields
 //! is required; other fields are optional.
 
-use std::collections::HashMap;
-use std::fmt;
-use std::fs;
-use std::io;
-use std::path::{Path, PathBuf};
-use std::sync::atomic::{AtomicBool, Ordering};
-use std::sync::Mutex;
+use std::{
+    collections::HashMap,
+    fmt, fs, io,
+    path::{Path, PathBuf},
+    sync::{
+        Mutex,
+        atomic::{AtomicBool, Ordering},
+    },
+};
 
 use serde::Deserialize;
 
@@ -56,7 +58,7 @@ pub struct RegistryEntry {
     /// The unique numeric identifier for this known value.
     pub codepoint: u64,
     /// The canonical string name for this known value.
-    pub canonical_name: String,
+    pub name: String,
     /// The type of entry (e.g., "property", "class", "value").
     #[serde(rename = "type")]
     pub entry_type: Option<String>,
@@ -135,9 +137,7 @@ impl std::error::Error for LoadError {
 }
 
 impl From<io::Error> for LoadError {
-    fn from(error: io::Error) -> Self {
-        LoadError::Io(error)
-    }
+    fn from(error: io::Error) -> Self { LoadError::Io(error) }
 }
 
 /// Result of a directory loading operation.
@@ -153,9 +153,7 @@ pub struct LoadResult {
 
 impl LoadResult {
     /// Returns the number of unique values loaded.
-    pub fn values_count(&self) -> usize {
-        self.values.len()
-    }
+    pub fn values_count(&self) -> usize { self.values.len() }
 
     /// Returns an iterator over the loaded known values.
     pub fn values_iter(&self) -> impl Iterator<Item = &KnownValue> {
@@ -168,10 +166,12 @@ impl LoadResult {
     }
 
     /// Returns true if any errors occurred during loading.
-    pub fn has_errors(&self) -> bool {
-        !self.errors.is_empty()
-    }
+    pub fn has_errors(&self) -> bool { !self.errors.is_empty() }
 }
+
+/// Result type for tolerant directory loading: successfully loaded values and
+/// per-file errors.
+type TolerantLoadResult = (Vec<KnownValue>, Vec<(PathBuf, LoadError)>);
 
 /// Configuration for loading known values from directories.
 ///
@@ -206,26 +206,22 @@ pub struct DirectoryConfig {
 
 impl DirectoryConfig {
     /// Creates a new empty configuration with no search paths.
-    pub fn new() -> Self {
-        Self { paths: Vec::new() }
-    }
+    pub fn new() -> Self { Self { paths: Vec::new() } }
 
-    /// Creates configuration with only the default directory (`~/.known-values/`).
+    /// Creates configuration with only the default directory
+    /// (`~/.known-values/`).
     pub fn default_only() -> Self {
-        Self {
-            paths: vec![Self::default_directory()],
-        }
+        Self { paths: vec![Self::default_directory()] }
     }
 
     /// Creates configuration with custom paths (processed in order).
     ///
     /// Later paths in the list take precedence over earlier paths when
     /// values have the same codepoint.
-    pub fn with_paths(paths: Vec<PathBuf>) -> Self {
-        Self { paths }
-    }
+    pub fn with_paths(paths: Vec<PathBuf>) -> Self { Self { paths } }
 
-    /// Creates configuration with custom paths followed by the default directory.
+    /// Creates configuration with custom paths followed by the default
+    /// directory.
     ///
     /// The default directory (`~/.known-values/`) is appended to the list,
     /// so its values will override values from the custom paths.
@@ -236,7 +232,8 @@ impl DirectoryConfig {
 
     /// Returns the default directory: `~/.known-values/`
     ///
-    /// Falls back to `./.known-values/` if the home directory cannot be determined.
+    /// Falls back to `./.known-values/` if the home directory cannot be
+    /// determined.
     pub fn default_directory() -> PathBuf {
         dirs::home_dir()
             .unwrap_or_else(|| PathBuf::from("."))
@@ -244,17 +241,13 @@ impl DirectoryConfig {
     }
 
     /// Returns the configured search paths.
-    pub fn paths(&self) -> &[PathBuf] {
-        &self.paths
-    }
+    pub fn paths(&self) -> &[PathBuf] { &self.paths }
 
     /// Adds a path to the configuration.
     ///
     /// The new path will be processed after existing paths, so its values
     /// will override values from earlier paths.
-    pub fn add_path(&mut self, path: PathBuf) {
-        self.paths.push(path);
-    }
+    pub fn add_path(&mut self, path: PathBuf) { self.paths.push(path); }
 }
 
 /// Loads all JSON registry files from a single directory.
@@ -296,18 +289,17 @@ pub fn load_from_directory(path: &Path) -> Result<Vec<KnownValue>, LoadError> {
         let file_path = entry.path();
 
         // Only process .json files
-        if file_path.extension().map_or(false, |ext| ext == "json") {
+        if file_path.extension().is_some_and(|ext| ext == "json") {
             let content = fs::read_to_string(&file_path)?;
             let registry: RegistryFile =
-                serde_json::from_str(&content).map_err(|e| LoadError::Json {
-                    file: file_path.clone(),
-                    error: e,
+                serde_json::from_str(&content).map_err(|e| {
+                    LoadError::Json { file: file_path.clone(), error: e }
                 })?;
 
             for entry in registry.entries {
                 values.push(KnownValue::new_with_name(
                     entry.codepoint,
-                    entry.canonical_name,
+                    entry.name,
                 ));
             }
         }
@@ -379,7 +371,7 @@ pub fn load_from_config(config: &DirectoryConfig) -> LoadResult {
 /// Loads from a directory with tolerance for individual file failures.
 fn load_from_directory_tolerant(
     path: &Path,
-) -> Result<(Vec<KnownValue>, Vec<(PathBuf, LoadError)>), LoadError> {
+) -> Result<TolerantLoadResult, LoadError> {
     let mut values = Vec::new();
     let mut errors = Vec::new();
 
@@ -391,7 +383,7 @@ fn load_from_directory_tolerant(
         let entry = entry?;
         let file_path = entry.path();
 
-        if file_path.extension().map_or(false, |ext| ext == "json") {
+        if file_path.extension().is_some_and(|ext| ext == "json") {
             match load_single_file(&file_path) {
                 Ok(file_values) => values.extend(file_values),
                 Err(e) => errors.push((file_path, e)),
@@ -405,16 +397,13 @@ fn load_from_directory_tolerant(
 /// Loads known values from a single JSON file.
 fn load_single_file(path: &Path) -> Result<Vec<KnownValue>, LoadError> {
     let content = fs::read_to_string(path)?;
-    let registry: RegistryFile =
-        serde_json::from_str(&content).map_err(|e| LoadError::Json {
-            file: path.to_path_buf(),
-            error: e,
-        })?;
+    let registry: RegistryFile = serde_json::from_str(&content)
+        .map_err(|e| LoadError::Json { file: path.to_path_buf(), error: e })?;
 
     Ok(registry
         .entries
         .into_iter()
-        .map(|entry| KnownValue::new_with_name(entry.codepoint, entry.canonical_name))
+        .map(|entry| KnownValue::new_with_name(entry.codepoint, entry.name))
         .collect())
 }
 
@@ -473,7 +462,9 @@ impl std::error::Error for ConfigError {}
 /// // Now access KNOWN_VALUES - it will use the custom configuration
 /// let binding = KNOWN_VALUES.get();
 /// ```
-pub fn set_directory_config(config: DirectoryConfig) -> Result<(), ConfigError> {
+pub fn set_directory_config(
+    config: DirectoryConfig,
+) -> Result<(), ConfigError> {
     if CONFIG_LOCKED.load(Ordering::SeqCst) {
         return Err(ConfigError::AlreadyInitialized);
     }
@@ -522,7 +513,8 @@ pub fn add_search_paths(paths: Vec<PathBuf>) -> Result<(), ConfigError> {
     Ok(())
 }
 
-/// Gets the current directory configuration, locking it for future modifications.
+/// Gets the current directory configuration, locking it for future
+/// modifications.
 ///
 /// This is called internally during `KNOWN_VALUES` initialization.
 pub(crate) fn get_and_lock_config() -> DirectoryConfig {
@@ -543,7 +535,7 @@ mod tests {
         let json = r#"{
             "ontology": {"name": "test"},
             "entries": [
-                {"codepoint": 9999, "canonical_name": "testValue", "type": "property"}
+                {"codepoint": 9999, "name": "testValue", "type": "property"}
             ],
             "statistics": {}
         }"#;
@@ -551,12 +543,12 @@ mod tests {
         let registry: RegistryFile = serde_json::from_str(json).unwrap();
         assert_eq!(registry.entries.len(), 1);
         assert_eq!(registry.entries[0].codepoint, 9999);
-        assert_eq!(registry.entries[0].canonical_name, "testValue");
+        assert_eq!(registry.entries[0].name, "testValue");
     }
 
     #[test]
     fn test_parse_minimal_registry() {
-        let json = r#"{"entries": [{"codepoint": 1, "canonical_name": "minimal"}]}"#;
+        let json = r#"{"entries": [{"codepoint": 1, "name": "minimal"}]}"#;
 
         let registry: RegistryFile = serde_json::from_str(json).unwrap();
         assert_eq!(registry.entries.len(), 1);
@@ -568,7 +560,7 @@ mod tests {
         let json = r#"{
             "entries": [{
                 "codepoint": 100,
-                "canonical_name": "fullEntry",
+                "name": "fullEntry",
                 "type": "class",
                 "uri": "https://example.com/vocab#fullEntry",
                 "description": "A complete entry with all fields"
@@ -578,7 +570,7 @@ mod tests {
         let registry: RegistryFile = serde_json::from_str(json).unwrap();
         let entry = &registry.entries[0];
         assert_eq!(entry.codepoint, 100);
-        assert_eq!(entry.canonical_name, "fullEntry");
+        assert_eq!(entry.name, "fullEntry");
         assert_eq!(entry.entry_type.as_deref(), Some("class"));
         assert_eq!(
             entry.uri.as_deref(),
@@ -596,8 +588,10 @@ mod tests {
 
     #[test]
     fn test_directory_config_custom_paths() {
-        let config =
-            DirectoryConfig::with_paths(vec![PathBuf::from("/a"), PathBuf::from("/b")]);
+        let config = DirectoryConfig::with_paths(vec![
+            PathBuf::from("/a"),
+            PathBuf::from("/b"),
+        ]);
         assert_eq!(config.paths().len(), 2);
         assert_eq!(config.paths()[0], PathBuf::from("/a"));
         assert_eq!(config.paths()[1], PathBuf::from("/b"));
@@ -606,7 +600,9 @@ mod tests {
     #[test]
     fn test_directory_config_with_default() {
         let config =
-            DirectoryConfig::with_paths_and_default(vec![PathBuf::from("/custom")]);
+            DirectoryConfig::with_paths_and_default(vec![PathBuf::from(
+                "/custom",
+            )]);
         assert_eq!(config.paths().len(), 2);
         assert_eq!(config.paths()[0], PathBuf::from("/custom"));
         assert!(config.paths()[1].ends_with(".known-values"));

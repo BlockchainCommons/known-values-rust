@@ -4,7 +4,9 @@
 mod tests {
     use std::path::Path;
 
-    use known_values::{DirectoryConfig, KnownValuesStore, KNOWN_VALUES, IS_A, NOTE};
+    use known_values::{
+        DirectoryConfig, IS_A, KNOWN_VALUES, KnownValuesStore, NOTE,
+    };
     use tempfile::TempDir;
 
     #[test]
@@ -26,7 +28,7 @@ mod tests {
 
         let json = r#"{
             "entries": [
-                {"codepoint": 99999, "canonical_name": "integrationTestValue"}
+                {"codepoint": 99999, "name": "integrationTestValue"}
             ]
         }"#;
         std::fs::write(&file_path, json).unwrap();
@@ -53,7 +55,7 @@ mod tests {
         // Override IS_A (codepoint 1) with a custom name
         let json = r#"{
             "entries": [
-                {"codepoint": 1, "canonical_name": "overriddenIsA"}
+                {"codepoint": 1, "name": "overriddenIsA"}
             ]
         }"#;
         std::fs::write(&file_path, json).unwrap();
@@ -81,12 +83,12 @@ mod tests {
 
         std::fs::write(
             &file1,
-            r#"{"entries": [{"codepoint": 10001, "canonical_name": "valueOne"}]}"#,
+            r#"{"entries": [{"codepoint": 10001, "name": "valueOne"}]}"#,
         )
         .unwrap();
         std::fs::write(
             &file2,
-            r#"{"entries": [{"codepoint": 10002, "canonical_name": "valueTwo"}]}"#,
+            r#"{"entries": [{"codepoint": 10002, "name": "valueTwo"}]}"#,
         )
         .unwrap();
 
@@ -106,14 +108,14 @@ mod tests {
         // First directory has value A
         std::fs::write(
             temp_dir1.path().join("a.json"),
-            r#"{"entries": [{"codepoint": 20001, "canonical_name": "fromDirOne"}]}"#,
+            r#"{"entries": [{"codepoint": 20001, "name": "fromDirOne"}]}"#,
         )
         .unwrap();
 
         // Second directory has value B
         std::fs::write(
             temp_dir2.path().join("b.json"),
-            r#"{"entries": [{"codepoint": 20002, "canonical_name": "fromDirTwo"}]}"#,
+            r#"{"entries": [{"codepoint": 20002, "name": "fromDirTwo"}]}"#,
         )
         .unwrap();
 
@@ -138,13 +140,13 @@ mod tests {
         // Both directories have same codepoint with different names
         std::fs::write(
             temp_dir1.path().join("first.json"),
-            r#"{"entries": [{"codepoint": 30000, "canonical_name": "firstVersion"}]}"#,
+            r#"{"entries": [{"codepoint": 30000, "name": "firstVersion"}]}"#,
         )
         .unwrap();
 
         std::fs::write(
             temp_dir2.path().join("second.json"),
-            r#"{"entries": [{"codepoint": 30000, "canonical_name": "secondVersion"}]}"#,
+            r#"{"entries": [{"codepoint": 30000, "name": "secondVersion"}]}"#,
         )
         .unwrap();
 
@@ -169,7 +171,8 @@ mod tests {
     #[test]
     fn test_nonexistent_directory_is_ok() {
         let mut store = KnownValuesStore::default();
-        let result = store.load_from_directory(Path::new("/nonexistent/path/12345"));
+        let result =
+            store.load_from_directory(Path::new("/nonexistent/path/12345"));
         assert!(result.is_ok());
         assert_eq!(result.unwrap(), 0);
     }
@@ -194,7 +197,7 @@ mod tests {
         // One valid file
         std::fs::write(
             temp_dir.path().join("valid.json"),
-            r#"{"entries": [{"codepoint": 40001, "canonical_name": "validValue"}]}"#,
+            r#"{"entries": [{"codepoint": 40001, "name": "validValue"}]}"#,
         )
         .unwrap();
 
@@ -205,7 +208,8 @@ mod tests {
         )
         .unwrap();
 
-        let config = DirectoryConfig::with_paths(vec![temp_dir.path().to_path_buf()]);
+        let config =
+            DirectoryConfig::with_paths(vec![temp_dir.path().to_path_buf()]);
         let result = known_values::load_from_config(&config);
 
         // Should have loaded the valid value
@@ -234,14 +238,14 @@ mod tests {
             "entries": [
                 {
                     "codepoint": 50001,
-                    "canonical_name": "fullFormatValue",
+                    "name": "fullFormatValue",
                     "type": "property",
                     "uri": "https://example.com/vocab#fullFormatValue",
                     "description": "A value in full format"
                 },
                 {
                     "codepoint": 50002,
-                    "canonical_name": "anotherValue",
+                    "name": "anotherValue",
                     "type": "class"
                 }
             ],
@@ -265,13 +269,14 @@ mod tests {
         std::fs::write(
             temp_dir.path().join("test.json"),
             r#"{"entries": [
-                {"codepoint": 60001, "canonical_name": "resultTest1"},
-                {"codepoint": 60002, "canonical_name": "resultTest2"}
+                {"codepoint": 60001, "name": "resultTest1"},
+                {"codepoint": 60002, "name": "resultTest2"}
             ]}"#,
         )
         .unwrap();
 
-        let config = DirectoryConfig::with_paths(vec![temp_dir.path().to_path_buf()]);
+        let config =
+            DirectoryConfig::with_paths(vec![temp_dir.path().to_path_buf()]);
         let result = known_values::load_from_config(&config);
 
         assert_eq!(result.values_count(), 2);
@@ -305,12 +310,13 @@ mod tests {
         // JSON file should be loaded
         std::fs::write(
             temp_dir.path().join("valid.json"),
-            r#"{"entries": [{"codepoint": 70001, "canonical_name": "jsonValue"}]}"#,
+            r#"{"entries": [{"codepoint": 70001, "name": "jsonValue"}]}"#,
         )
         .unwrap();
 
         // Non-JSON files should be ignored
-        std::fs::write(temp_dir.path().join("readme.txt"), "Some text").unwrap();
+        std::fs::write(temp_dir.path().join("readme.txt"), "Some text")
+            .unwrap();
         std::fs::write(temp_dir.path().join("data.xml"), "<xml/>").unwrap();
 
         let mut store = KnownValuesStore::default();

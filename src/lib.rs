@@ -1,20 +1,22 @@
-//! Known Values: A compact, deterministic representation for ontological concepts.
+//! Known Values: A compact, deterministic representation for ontological
+//! concepts.
 //!
-//! This crate implements the [Blockchain Commons Known Values specification][bcr],
-//! providing a compact way to represent ontological concepts using 64-bit unsigned
-//! integers with optional human-readable names.
+//! This crate implements the [Blockchain Commons Known Values
+//! specification][bcr], providing a compact way to represent ontological
+//! concepts using 64-bit unsigned integers with optional human-readable names.
 //!
 //! # Basic Usage
 //!
 //! ```rust
-//! use known_values::{KnownValue, KnownValuesStore, IS_A, NOTE};
+//! use known_values::{IS_A, KnownValue, KnownValuesStore, NOTE};
 //!
 //! // Use predefined constants
 //! assert_eq!(IS_A.value(), 1);
 //! assert_eq!(IS_A.name(), "isA");
 //!
 //! // Create custom known values
-//! let custom = KnownValue::new_with_name(1000u64, "myCustomValue".to_string());
+//! let custom =
+//!     KnownValue::new_with_name(1000u64, "myCustomValue".to_string());
 //! assert_eq!(custom.value(), 1000);
 //!
 //! // Use a store for bidirectional lookup
@@ -42,14 +44,15 @@
 //! ```json
 //! {
 //!   "entries": [
-//!     {"codepoint": 1000, "canonical_name": "myValue", "type": "property"}
+//!     {"codepoint": 1000, "name": "myValue", "type": "property"}
 //!   ]
 //! }
 //! ```
 //!
 //! ## Custom Configuration
 //!
-//! Configure search paths before first access (requires `directory-loading` feature):
+//! Configure search paths before first access (requires `directory-loading`
+//! feature):
 //!
 //! ```rust,ignore
 //! use known_values::{set_directory_config, DirectoryConfig};
@@ -86,6 +89,7 @@ mod directory_loader;
 
 #[cfg(feature = "directory-loading")]
 pub use directory_loader::{
-    add_search_paths, load_from_config, load_from_directory, set_directory_config,
-    ConfigError, DirectoryConfig, LoadError, LoadResult, RegistryEntry, RegistryFile,
+    ConfigError, DirectoryConfig, LoadError, LoadResult, RegistryEntry,
+    RegistryFile, add_search_paths, load_from_config, load_from_directory,
+    set_directory_config,
 };

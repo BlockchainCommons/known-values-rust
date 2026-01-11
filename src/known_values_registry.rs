@@ -237,8 +237,10 @@ impl LazyKnownValues {
     ///
     /// When the `directory-loading` feature is enabled, this method will:
     /// 1. Initialize the store with hardcoded known values
-    /// 2. Load additional values from configured directories (default: `~/.known-values/`)
-    /// 3. Override hardcoded values with directory-loaded values when codepoints match
+    /// 2. Load additional values from configured directories (default:
+    ///    `~/.known-values/`)
+    /// 3. Override hardcoded values with directory-loaded values when
+    ///    codepoints match
     pub fn get(&self) -> std::sync::MutexGuard<'_, Option<KnownValuesStore>> {
         self.init.call_once(|| {
             #[allow(unused_mut)]
