@@ -14,10 +14,16 @@ This crate defines the [known values](https://github.com/BlockchainCommons/Resea
 
 ```toml
 [dependencies]
-known-values = "0.14.0"
+known-values = "0.15.0"
 ```
 
 ## Version History
+
+### 0.15.0 - January 11, 2026
+
+- Add directory-based JSON registry loading (default: ~/.known-values/)
+- Add run_tests.sh script for testing feature combinations
+- Fix value override to properly remove old name mappings
 
 ### 0.14.0 - December 19, 2025
 
