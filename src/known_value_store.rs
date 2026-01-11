@@ -1,4 +1,6 @@
 use std::collections::HashMap;
+#[cfg(feature = "directory-loading")]
+use std::path::Path;
 
 use super::known_value::KnownValue;
 
@@ -307,16 +309,110 @@ impl KnownValuesStore {
     }
 
     /// Internal helper method to insert a KnownValue into the store's maps.
+    ///
+    /// When inserting a value with a codepoint that already exists, this method
+    /// removes the old name from the name index before adding the new one.
     fn _insert(
         known_value: KnownValue,
         known_values_by_raw_value: &mut HashMap<u64, KnownValue>,
         known_values_by_assigned_name: &mut HashMap<String, KnownValue>,
     ) {
-        known_values_by_raw_value
-            .insert(known_value.value(), known_value.clone());
+        // If there's an existing value with the same codepoint, remove its name
+        // from the name index to avoid stale entries
+        if let Some(old_value) = known_values_by_raw_value.get(&known_value.value()) {
+            if let Some(old_name) = old_value.assigned_name() {
+                known_values_by_assigned_name.remove(old_name);
+            }
+        }
+
+        known_values_by_raw_value.insert(known_value.value(), known_value.clone());
         if let Some(name) = known_value.assigned_name() {
             known_values_by_assigned_name.insert(name.to_string(), known_value);
         }
+    }
+
+    /// Loads and inserts known values from a directory containing JSON registry files.
+    ///
+    /// This method scans the specified directory for `.json` files and parses them
+    /// as known value registries. Values from JSON files override existing values
+    /// in the store when codepoints match.
+    ///
+    /// This method is only available when the `directory-loading` feature is enabled.
+    ///
+    /// # Arguments
+    ///
+    /// * `path` - The directory to scan for JSON registry files.
+    ///
+    /// # Returns
+    ///
+    /// Returns `Ok(count)` with the number of values loaded, or an error if
+    /// directory traversal fails.
+    ///
+    /// # Examples
+    ///
+    /// ```rust,ignore
+    /// use known_values::KnownValuesStore;
+    /// use std::path::Path;
+    ///
+    /// let mut store = KnownValuesStore::default();
+    /// let count = store.load_from_directory(Path::new("/etc/known-values"))?;
+    /// println!("Loaded {} values", count);
+    /// ```
+    #[cfg(feature = "directory-loading")]
+    pub fn load_from_directory(
+        &mut self,
+        path: &Path,
+    ) -> Result<usize, crate::LoadError> {
+        let values = crate::directory_loader::load_from_directory(path)?;
+        let count = values.len();
+        for value in values {
+            self.insert(value);
+        }
+        Ok(count)
+    }
+
+    /// Loads known values from multiple directories using the provided configuration.
+    ///
+    /// Directories are processed in order. When multiple entries have the same
+    /// codepoint, values from later directories override values from earlier
+    /// directories.
+    ///
+    /// This method is only available when the `directory-loading` feature is enabled.
+    ///
+    /// # Arguments
+    ///
+    /// * `config` - The directory configuration specifying search paths.
+    ///
+    /// # Returns
+    ///
+    /// A `LoadResult` containing information about the loading operation.
+    ///
+    /// # Examples
+    ///
+    /// ```rust,ignore
+    /// use known_values::{KnownValuesStore, DirectoryConfig};
+    ///
+    /// let mut store = KnownValuesStore::default();
+    /// let config = DirectoryConfig::default_only();
+    /// let result = store.load_from_config(&config);
+    ///
+    /// println!("Loaded {} values", result.values_count());
+    /// if result.has_errors() {
+    ///     for (path, error) in &result.errors {
+    ///         eprintln!("Error: {}: {}", path.display(), error);
+    ///     }
+    /// }
+    /// ```
+    #[cfg(feature = "directory-loading")]
+    pub fn load_from_config(
+        &mut self,
+        config: &crate::DirectoryConfig,
+    ) -> crate::LoadResult {
+        let result = crate::directory_loader::load_from_config(config);
+        for value in result.values.values() {
+            self.insert(value.clone());
+        }
+        result
     }
 }
 

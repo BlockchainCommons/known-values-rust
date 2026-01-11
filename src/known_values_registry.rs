@@ -234,9 +234,15 @@ impl LazyKnownValues {
     ///
     /// This method guarantees that initialization occurs exactly once,
     /// even when called from multiple threads simultaneously.
+    ///
+    /// When the `directory-loading` feature is enabled, this method will:
+    /// 1. Initialize the store with hardcoded known values
+    /// 2. Load additional values from configured directories (default: `~/.known-values/`)
+    /// 3. Override hardcoded values with directory-loaded values when codepoints match
     pub fn get(&self) -> std::sync::MutexGuard<'_, Option<KnownValuesStore>> {
         self.init.call_once(|| {
-            let m = KnownValuesStore::new([
+            #[allow(unused_mut)]
+            let mut m = KnownValuesStore::new([
                 UNIT,
                 IS_A,
                 ID,
@@ -338,6 +344,19 @@ impl LazyKnownValues {
                 PARENT,
                 CHILD,
             ]);
+
+            // When directory-loading feature is enabled, load additional values
+            // from configured directories. Values from directories override
+            // hardcoded values when codepoints match.
+            #[cfg(feature = "directory-loading")]
+            {
+                let config = crate::directory_loader::get_and_lock_config();
+                let result = crate::directory_loader::load_from_config(&config);
+                for value in result.into_values() {
+                    m.insert(value);
+                }
+            }
+
             *self.data.lock().unwrap() = Some(m);
         });
         self.data.lock().unwrap()

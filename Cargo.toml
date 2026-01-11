@@ -17,7 +17,19 @@ keywords = [
 ] # Up to five
 categories = ["data-structures", "encoding"] # https://crates.io/category_slugs
 
+[features]
+default = ["directory-loading"]
+directory-loading = ["dep:serde", "dep:serde_json", "dep:dirs"]
+
 [dependencies]
 bc-components = "^0.31.0"
 dcbor = { version = "^0.25.0", features = ["multithreaded"] }
 paste = "^1.0.12"
+
+# Optional dependencies for directory loading
+serde = { version = "1.0", features = ["derive"], optional = true }
+serde_json = { version = "1.0", optional = true }
+dirs = { version = "5.0", optional = true }
+
+[dev-dependencies]
+tempfile = "3.10"
