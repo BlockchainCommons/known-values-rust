@@ -204,7 +204,8 @@ const_known_value!(702, SOURCE, "source");
 const_known_value!(703, TARGET, "target");
 const_known_value!(704, PARENT, "parent");
 const_known_value!(705, CHILD, "child");
-// 706-... *unassigned*
+const_known_value!(706, SELF, "Self");
+// 707-... *unassigned*
 
 /// A lazily initialized singleton that holds the global registry of known
 /// values.
