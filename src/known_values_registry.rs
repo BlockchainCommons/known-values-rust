@@ -73,7 +73,8 @@ const_known_value!(21, VALID_FROM, "validFrom");
 const_known_value!(22, VALID_UNTIL, "validUntil");
 const_known_value!(23, POSITION, "position");
 const_known_value!(24, NICKNAME, "nickname");
-// 25-49 *unassigned*
+const_known_value!(25, VALUE, "value");
+// 26-49 *unassigned*
 
 //
 // Attachments
