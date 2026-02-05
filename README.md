@@ -14,10 +14,20 @@ This crate defines the [known values](https://github.com/BlockchainCommons/Resea
 
 ```toml
 [dependencies]
-known-values = "0.15.1"
+known-values = "0.15.2"
 ```
 
 ## Version History
+
+### 0.15.2 - February 4, 2026
+
+- Rename PRIVILEGE_AUTH display string from "Auth" to "Authorize"
+- Rename BITCOIN_VALUE display string from "BTC" to "Bitcoin"
+- Rename ETHEREUM_VALUE display string from "ETH" to "Ethereum"
+- Rename TEZOS_VALUE display string from "XTZ" to "Tezos"
+- Rename PARENT_PATH display string from "parent" to "parentPath"
+- Rename CHILDREN_PATH display string from "children" to "childrenPath"
+- Rename GRAPH display string from "graph" to "Graph"
 
 ### 0.15.1 - January 31, 2026
 

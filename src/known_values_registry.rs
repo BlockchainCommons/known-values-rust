@@ -104,7 +104,7 @@ const_known_value!(68, PROVENANCE_GENERATOR, "provenanceGenerator");
 //
 
 const_known_value!(70, PRIVILEGE_ALL, "All");
-const_known_value!(71, PRIVILEGE_AUTH, "Auth");
+const_known_value!(71, PRIVILEGE_AUTH, "Authorize");
 const_known_value!(72, PRIVILEGE_SIGN, "Sign");
 const_known_value!(73, PRIVILEGE_ENCRYPT, "Encrypt");
 const_known_value!(74, PRIVILEGE_ELIDE, "Elide");
@@ -150,9 +150,9 @@ const_known_value!(203, MASTER_KEY_TYPE, "MasterKey");
 //
 
 const_known_value!(300, ASSET, "asset");
-const_known_value!(301, BITCOIN_VALUE, "BTC");
-const_known_value!(302, ETHEREUM_VALUE, "ETH");
-const_known_value!(303, TEZOS_VALUE, "XTZ");
+const_known_value!(301, BITCOIN_VALUE, "Bitcoin");
+const_known_value!(302, ETHEREUM_VALUE, "Ethereum");
+const_known_value!(303, TEZOS_VALUE, "Tezos");
 // 304-399 *unassigned*
 
 //
@@ -171,8 +171,8 @@ const_known_value!(402, TEST_NET_VALUE, "TestNet");
 const_known_value!(500, BIP32_KEY_TYPE, "BIP32Key");
 const_known_value!(501, CHAIN_CODE, "chainCode");
 const_known_value!(502, DERIVATION_PATH_TYPE, "DerivationPath");
-const_known_value!(503, PARENT_PATH, "parent");
-const_known_value!(504, CHILDREN_PATH, "children");
+const_known_value!(503, PARENT_PATH, "parentPath");
+const_known_value!(504, CHILDREN_PATH, "childrenPath");
 const_known_value!(505, PARENT_FINGERPRINT, "parentFingerprint");
 const_known_value!(506, PSBT_TYPE, "PSBT");
 const_known_value!(507, OUTPUT_DESCRIPTOR_TYPE, "OutputDescriptor");
@@ -183,7 +183,7 @@ const_known_value!(508, OUTPUT_DESCRIPTOR, "outputDescriptor");
 // Graphs
 //
 
-const_known_value!(600, GRAPH, "graph");
+const_known_value!(600, GRAPH, "Graph");
 const_known_value!(601, SOURCE_TARGET_GRAPH, "SourceTargetGraph");
 const_known_value!(602, PARENT_CHILD_GRAPH, "ParentChildGraph");
 const_known_value!(603, DIGRAPH, "Digraph");
