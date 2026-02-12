@@ -74,6 +74,8 @@ const_known_value!(22, VALID_UNTIL, "validUntil");
 const_known_value!(23, POSITION, "position");
 const_known_value!(24, NICKNAME, "nickname");
 const_known_value!(25, VALUE, "value");
+const_known_value!(26, ATTESTATION, "attestation");
+const_known_value!(27, VERIFIABLE_AT, "verifiableAt");
 // 26-49 *unassigned*
 
 //
@@ -272,6 +274,8 @@ impl LazyKnownValues {
                 VALID_UNTIL,
                 POSITION,
                 NICKNAME,
+                ATTESTATION,
+                VERIFIABLE_AT,
                 ATTACHMENT,
                 VENDOR,
                 CONFORMS_TO,
