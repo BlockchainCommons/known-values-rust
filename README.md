@@ -14,10 +14,14 @@ This crate defines the [known values](https://github.com/BlockchainCommons/Resea
 
 ```toml
 [dependencies]
-known-values = "0.15.4"
+known-values = "0.15.5"
 ```
 
 ## Version History
+
+### 0.15.5 - March 16, 2026
+
+- Disable default features on bc-components dependency.
 
 ### 0.15.4 - February 12, 2026
 
