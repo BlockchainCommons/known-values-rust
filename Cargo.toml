@@ -22,7 +22,7 @@ default = ["directory-loading"]
 directory-loading = ["dep:serde", "dep:serde_json", "dep:dirs"]
 
 [dependencies]
-bc-components = "^0.31.0"
+bc-components = { version = "^0.31.0", default-features = false }
 dcbor = { version = "^0.25.0", features = ["multithreaded"] }
 paste = "^1.0.12"
 
